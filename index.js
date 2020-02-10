@@ -46,16 +46,14 @@ server.get("/api/users/:id", (req, res) => {
     .then(userWithID => {
       userWithID
         ? res.status(200).json(userWithID)
-        : res
-            .status(500)
-            .json({
-              errorMessage: "The user information could not be retrieved."
-            });
+        : res.status(500).json({
+            errorMessage: "The user with the specified ID does not exist."
+          });
     })
     .catch(() =>
       res
         .status(404)
-        .json({ message: "The user with the specified ID does not exist." })
+        .json({ message: "The user information could not be retrieved." })
     );
 });
 
@@ -65,20 +63,62 @@ server.get("/", (req, res) => {
 
 // (U)pdate
 server.put("/api/users/:id", (req, res) => {
-  const { id } = req.params;
-  api
-    .update(id, req.body)
-    .then(apiResult => res.status(200).json(apiResult))
-    .catch(err => res.status(204).json({ message: err }));
+  const { newName, newBio } = req.body; // required
+  if (newName && newBio) {
+    const { id } = req.params;
+    // find record with ID
+    api.findById(id).then(userWithID => {
+      if (userWithID.id) {
+        // yes we have a record for this id; Update it.
+        api
+          .update(id, req.body)
+          .then(apiResult => {
+            apiResult > 0
+              ? api.findById(id).then(finalResult => {
+                  res.status(200).json(finalResult);
+                })
+              : res.status(500).json({});
+          })
+          .catch(() =>
+            res.status(500).json({
+              errorMessage: "The user information could not be modified."
+            })
+          );
+      } else {
+        // no, we don't have a record with that ID
+        res
+          .status(400)
+          .json({ message: "The user with the specified ID does not exist." });
+      }
+    });
+  } else
+    res
+      .status(400)
+      .json({ errorMessage: "Please provide name and bio for the user." });
 });
 
 // (D)elete
 server.delete("/api/users/:id", (req, res) => {
   const { id } = req.params;
-  api
-    .remove(id)
-    .then(recordsRemoved => res.status(200).json(recordsRemoved))
-    .catch(err => res.status(204).json({ messgage: err }));
+  api.findById(id).then(userWithID => {
+    userWithID
+      ? api
+          .remove(id)
+          .then(
+            cnt =>
+              cnt > 0
+                ? res.status(200).json(cnt)
+                : res.status(500).json({ errorMessage: `${cnt} items deleted` }) // a rare case
+          )
+          .catch(() =>
+            res
+              .status(500)
+              .json({ errorMessage: "The user could not be removed" })
+          )
+      : res
+          .status(404)
+          .json({ message: "The user with the specified ID does not exist." });
+  });
 });
 
 server.listen(PORT, () => console.log(`**API listening on port ${PORT}**`));

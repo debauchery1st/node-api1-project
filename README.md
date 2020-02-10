@@ -110,10 +110,10 @@ When the client makes a `DELETE` request to `/api/users/:id`:
 
 When the client makes a `PUT` request to `/api/users/:id`:
 
-- If the _user_ with the specified `id` is not found:
+✓ If the _user_ with the specified `id` is not found:
 
-  - respond with HTTP status code `404` (Not Found).
-  - return the following JSON object: `{ message: "The user with the specified ID does not exist." }`.
+✓ respond with HTTP status code `404` (Not Found).
+✓ return the following JSON object: `{ message: "The user with the specified ID does not exist." }`.
 
 ✓ If the request body is missing the `name` or `bio` property:
 
@@ -136,13 +136,14 @@ When the client makes a `PUT` request to `/api/users/:id`:
 
 To work on the stretch problems you'll need to enable the `cors` middleware. Follow these steps:
 
-- add the `cors` npm module: `npm i cors`.
-- add `server.use(cors())` after `server.use(express.json())`.
+✓ add the `cors` npm module: `npm i cors`.
+✓ add `server.use(cors())` after `server.use(express.json())`.
 
 Create a new React application and connect it to your server:
 
-- the React application can be anywhere, but, for this project create it inside the folder for the solution.
-- connect to the `/api/users` endpoint in the API and show the list of users.
+✓ the React application can be anywhere, but, for this project create it inside the folder for the solution.
+✓ connect to the `/api/users` endpoint in the API and show the list of users.
+
 - add a delete button to each displayed user that will remove it from the server.
 - add forms to add and update data.
 - Style the list of users however you see fit.

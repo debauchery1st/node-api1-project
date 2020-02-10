@@ -73,8 +73,11 @@ server.put("/api/users/:id", (req, res) => {
         api
           .update(id, req.body)
           .then(apiResult => {
+            // why return the updated record ?
+            // the user has this information already.
             apiResult > 0
               ? api.findById(id).then(finalResult => {
+                  // nevertheless...
                   res.status(200).json(finalResult);
                 })
               : res.status(500).json({});
